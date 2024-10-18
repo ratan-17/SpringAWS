@@ -6,6 +6,7 @@ import com.example.awsec2api.service.EC2Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,5 +34,17 @@ public class EC2Controller {
     public ResponseEntity<VMListResponse> getActiveVMs() {
         VMListResponse activeVMs = ec2Service.getActiveVMs();
         return ResponseEntity.ok(activeVMs);
+    }
+
+    // New delete method
+    @DeleteMapping("/delete/{instanceId}")
+    @Operation(summary = "Delete an EC2 instance", description = "Deletes an EC2 instance by its ID")
+    public ResponseEntity<String> deleteVM(@PathVariable String instanceId) {
+        boolean isDeleted = ec2Service.deleteVM(instanceId);
+        if (isDeleted) {
+            return ResponseEntity.ok("EC2 instance with ID " + instanceId + " deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EC2 instance with ID " + instanceId + " not found.");
+        }
     }
 }
